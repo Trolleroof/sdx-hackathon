@@ -1,7 +1,4 @@
-import YahooFinance from 'yahoo-finance2';
-
-// Suppress Yahoo Finance survey notice
-YahooFinance.suppressNotices(['yahooSurvey']);
+import { getGlobalQuote } from './alphaVantage.js';
 
 // Mock data for fallback
 const MOCK_DATA = {
@@ -55,18 +52,14 @@ function estimateVolatility(ticker, price) {
   return 0.20;
 }
 
-// Fetch real market data from Yahoo Finance
+// Fetch real market data from Alpha Vantage
 async function fetchRealMarketData(ticker) {
   try {
     console.log(`Fetching real data for ${ticker}...`);
-    
-    // Create YahooFinance instance
-    const yf = new YahooFinance();
-    
-    // Fetch current quote
-    const quote = await yf.quote(ticker);
-    
-    const currentPrice = quote.regularMarketPrice || quote.price || 0;
+    const data = await getGlobalQuote(ticker);
+    const quote = data['Global Quote'] || data;
+    const rawPrice = quote['05. price'] ?? quote['price'] ?? 0;
+    const currentPrice = parseFloat(rawPrice) || 0;
     // For now, use a reasonable volatility estimate based on the stock
     // In a real implementation, you'd fetch historical data from another source
     const volatility = estimateVolatility(ticker, currentPrice);
@@ -79,7 +72,7 @@ async function fetchRealMarketData(ticker) {
       expiry: expiries[0], // Primary expiry
       all_expiries: expiries,
       last_updated: new Date().toISOString(),
-      source: 'yahoo_finance'
+      source: 'alpha_vantage'
     };
     
   } catch (error) {

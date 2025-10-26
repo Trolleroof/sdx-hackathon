@@ -10,7 +10,7 @@ interface Message {
   intent?: Intent;
 }
 
-export default function ChatConsole() {
+export default function ChatConsole({ onIntent }: { onIntent?: (intent: Intent) => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -64,6 +64,7 @@ export default function ChatConsole() {
             intent 
           },
         ]);
+        onIntent?.(intent);
       }
     } catch (error) {
       // If intent extraction failed because no ticker found, use general chat

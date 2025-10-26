@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import intentRouter from './routes/intent.js';
+import alphaRouter from './api/alpha/route.js';
+import dataRouter from './api/data/route.js';
 
 dotenv.config();
 
@@ -24,6 +26,8 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/api/intent', intentRouter);
+app.use('/api/alpha', alphaRouter);
+app.use('/api/data', dataRouter);
 
 // Chat endpoint (legacy - for general chat)
 app.post('/api/chat', async (req, res) => {
